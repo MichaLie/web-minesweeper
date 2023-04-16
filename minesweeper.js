@@ -1,3 +1,4 @@
+let revealedCells = 0;
 const GRID_SIZE = 10;
 const MINE_COUNT = 10;
 
@@ -49,6 +50,9 @@ function floodFill(grid, row, col) {
     if (cell.revealed || cell.mine) return;
 
     cell.revealed = true;
+    revealedCells++; // Increment the revealedCells counter
+    checkWin(); // Check if the game has been won
+
     cell.element.textContent = cell.adjacentMines || "";
     cell.element.style.backgroundColor = "#ddd";
 
@@ -60,6 +64,7 @@ function floodFill(grid, row, col) {
         }
     }
 }
+
 
 function createGrid() {
     const grid = [];
@@ -139,6 +144,13 @@ function renderGame(grid) {
             container.appendChild(element);
             cell.element = element;
         }
+    }
+}
+
+function checkWin() {
+    const totalNonMineCells = GRID_SIZE * GRID_SIZE - MINE_COUNT;
+    if (revealedCells === totalNonMineCells) {
+        alert("Congratulations! You won Michalie`s first game!");
     }
 }
 
