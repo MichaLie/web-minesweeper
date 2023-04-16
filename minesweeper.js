@@ -59,3 +59,55 @@ function floodFill(grid, row, col) {
         }
     }
 }
+function createGrid() {
+    const grid = [];
+    for (let row = 0; row < GRID_SIZE; row++) {
+        const newRow = [];
+        for (let col = 0; col < GRID_SIZE; col++) {
+            newRow.push(new Cell(row, col));
+        }
+        grid.push(newRow);
+    }
+    return grid;
+}
+
+function renderGame(grid) {
+    const container = document.getElementById("grid-container");
+    container.innerHTML = "";
+
+    for (const row of grid) {
+        for (const cell of row) {
+            const element = document.createElement("div");
+            element.classList.add("cell");
+            element.addEventListener("click", () => handleCellClick(grid, cell));
+            container.appendChild(element);
+            cell.element = element;
+        }
+    }
+}
+
+function handleCellClick(grid, cell) {
+    if (cell.revealed) return;
+
+    if (cell.mine) {
+        alert("Game Over!");
+        return;
+    }
+
+    floodFill(grid, cell.row, cell.col);
+}
+
+function startGame() {
+    const grid = createGrid();
+    generateMines(grid, MINE_COUNT);
+
+    for (const row of grid) {
+        for (const cell of row) {
+            cell.adjacentMines = countAdjacentMines(grid, cell.row, cell.col);
+        }
+    }
+
+    renderGame(grid);
+}
+
+startGame();
