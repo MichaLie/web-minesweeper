@@ -42,6 +42,38 @@ function countAdjacentMines(grid, row, col) {
     return count;
 }
 
+function startGame() {
+    const grid = createGrid();
+    generateMines(grid, MINE_COUNT);
+
+    for (const row of grid) {
+        for (const cell of row) {
+            cell.adjacentMines = countAdjacentMines(grid, cell.row, cell.col);
+        }
+    }
+
+    renderGame(grid); // Add this line back
+}
+
+function renderGame(grid) {
+    const container = document.getElementById("grid-container");
+    container.innerHTML = "";
+
+    for (const row of grid) {
+        for (const cell of row) {
+            const element = document.createElement("div");
+            element.classList.add("cell");
+            element.addEventListener("click", () => handleCellClick(grid, cell));
+            element.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                handleCellRightClick(cell);
+            });
+            container.appendChild(element);
+            cell.element = element;
+        }
+    }
+}
+
 function floodFill(grid, row, col) {
     if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) return;
 
@@ -72,24 +104,7 @@ function createGrid() {
     return grid;
 }
 
-function renderGame(grid) {
-    const container = document.getElementById("grid-container");
-    container.innerHTML = "";
 
-    for (const row of grid) {
-        for (const cell of row) {
-            const element = document.createElement("div");
-            element.classList.add("cell");
-            element.addEventListener("click", () => handleCellClick(grid, cell));
-            element.addEventListener("contextmenu", (event) => {
-                event.preventDefault();
-                handleCellRightClick(cell);
-            });
-            container.appendChild(element);
-            cell.element = element;
-        }
-    }
-}
 
 function handleCellClick(grid, cell) {
     if (cell.revealed) return;
@@ -112,41 +127,6 @@ function startGame() {
         }
     }
 
-    renderGame(grid);
-}
-
-startGame();
-
-class Cell {
-    constructor(row, col) {
-        this.row = row;
-        this.col = col;
-        this.mine = false;
-        this.adjacentMines = 0;
-        this.revealed = false;
-        this.flagged = false;
-    }
-}
-
-function renderGame(grid) {
-    const container = document.getElementById("grid-container");
-    container.innerHTML = "";
-
-    for (const row of grid) {
-        for (const cell of row) {
-            const element = document.createElement("div");
-            element.classList.add("cell");
-            element.addEventListener("click", () => handleCellClick(grid, cell));
-            element.addEventListener("contextmenu", (event) => { // Add this event listener
-                event.preventDefault();
-                handleCellRightClick(cell);
-            });
-            container.appendChild(element);
-            cell.element = element;
-        }
-    }
-}
-
 function handleCellRightClick(cell) {
     if (cell.revealed) return;
 
@@ -155,5 +135,4 @@ function handleCellRightClick(cell) {
 }
 
 startGame();
-
 
