@@ -82,7 +82,7 @@ function handleCellClick(grid, cell) {
     if (cell.revealed) return;
 
     if (cell.mine) {
-        alert("Game Over!");
+        alert("Game Over! You lost MichaLie`s first game");
         return;
     }
 
