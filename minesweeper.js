@@ -111,3 +111,29 @@ function startGame() {
 }
 
 startGame();
+
+class Cell {
+    constructor(row, col) {
+        this.row = row;
+        this.col = col;
+        this.mine = false;
+        this.adjacentMines = 0;
+        this.revealed = false;
+        this.flagged = false;
+    }
+}
+
+function handleCellRightClick(cell) {
+    if (cell.revealed) return;
+
+    cell.flagged = !cell.flagged;
+    cell.element.textContent = cell.flagged ? "🚩" : "";
+}
+
+function handleCellRightClick(cell) {
+    if (cell.revealed) return;
+
+    cell.flagged = !cell.flagged;
+    cell.element.textContent = cell.flagged ? "🚩" : "";
+}
+
