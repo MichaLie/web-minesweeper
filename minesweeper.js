@@ -42,17 +42,53 @@ function countAdjacentMines(grid, row, col) {
     return count;
 }
 
-function startGame() {
-    const grid = createGrid();
-    generateMines(grid, MINE_COUNT);
+function floodFill(grid, row, col) {
+    if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) return;
 
-    for (const row of grid) {
-        for (const cell of row) {
-            cell.adjacentMines = countAdjacentMines(grid, cell.row, cell.col);
+    const cell = grid[row][col];
+    if (cell.revealed || cell.mine) return;
+
+    cell.revealed = true;
+    cell.element.textContent = cell.adjacentMines || "";
+    cell.element.style.backgroundColor = "#ddd";
+
+    if (cell.adjacentMines === 0) {
+        for (let r = -1; r <= 1; r++) {
+            for (let c = -1; c <= 1; c++) {
+                floodFill(grid, row + r, col + c);
+            }
         }
     }
+}
 
-    renderGame(grid); // Add this line back
+function createGrid() {
+    const grid = [];
+    for (let row = 0; row < GRID_SIZE; row++) {
+        const newRow = [];
+        for (let col = 0; col < GRID_SIZE; col++) {
+            newRow.push(new Cell(row, col));
+        }
+        grid.push(newRow);
+    }
+    return grid;
+}
+
+function handleCellClick(grid, cell) {
+    if (cell.revealed) return;
+
+    if (cell.mine) {
+        alert("Game Over!");
+        return;
+    }
+
+    floodFill(grid, cell.row, cell.col);
+}
+
+function handleCellRightClick(cell) {
+    if (cell.revealed) return;
+
+    cell.flagged = !cell.flagged;
+    cell.element.textContent = cell.flagged ? "🚩" : "";
 }
 
 function renderGame(grid) {
@@ -74,49 +110,6 @@ function renderGame(grid) {
     }
 }
 
-function floodFill(grid, row, col) {
-    if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) return;
-
-    const cell = grid[row][col];
-    if (cell.revealed || cell.mine) return;
-
-    cell.revealed = true;
-    cell.element.textContent = cell.adjacentMines || "";
-    cell.element.style.backgroundColor = "#ddd";
-
-    if (cell.adjacentMines === 0) {
-        for (let r = -1; r <= 1; r++) {
-            for (let c = -1; c <= 1; c++) {
-                floodFill(grid, row + r, col + c);
-            }
-        }
-    }
-}
-function createGrid() {
-    const grid = [];
-    for (let row = 0; row < GRID_SIZE; row++) {
-        const newRow = [];
-        for (let col = 0; col < GRID_SIZE; col++) {
-            newRow.push(new Cell(row, col));
-        }
-        grid.push(newRow);
-    }
-    return grid;
-}
-
-
-
-function handleCellClick(grid, cell) {
-    if (cell.revealed) return;
-
-    if (cell.mine) {
-        alert("Game Over!");
-        return;
-    }
-
-    floodFill(grid, cell.row, cell.col);
-}
-
 function startGame() {
     const grid = createGrid();
     generateMines(grid, MINE_COUNT);
@@ -127,11 +120,26 @@ function startGame() {
         }
     }
 
-function handleCellRightClick(cell) {
-    if (cell.revealed) return;
+    renderGame(grid);
+}
 
-    cell.flagged = !cell.flagged;
-    cell.element.textContent = cell.flagged ? "🚩" : "";
+function renderGame(grid) {
+    const container = document.getElementById("grid-container");
+    container.innerHTML = "";
+
+    for (const row of grid) {
+        for (const cell of row) {
+            const element = document.createElement("div");
+            element.classList.add("cell");
+            element.addEventListener("click", () => handleCellClick(grid, cell));
+            element.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                handleCellRightClick(cell);
+            });
+            container.appendChild(element);
+            cell.element = element;
+        }
+    }
 }
 
 startGame();
