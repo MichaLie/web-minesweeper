@@ -8,6 +8,7 @@ class Cell {
         this.mine = false;
         this.adjacentMines = 0;
         this.revealed = false;
+        this.flagged = false;
     }
 }
 
@@ -80,6 +81,10 @@ function renderGame(grid) {
             const element = document.createElement("div");
             element.classList.add("cell");
             element.addEventListener("click", () => handleCellClick(grid, cell));
+            element.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                handleCellRightClick(cell);
+            });
             container.appendChild(element);
             cell.element = element;
         }
@@ -123,11 +128,23 @@ class Cell {
     }
 }
 
-function handleCellRightClick(cell) {
-    if (cell.revealed) return;
+function renderGame(grid) {
+    const container = document.getElementById("grid-container");
+    container.innerHTML = "";
 
-    cell.flagged = !cell.flagged;
-    cell.element.textContent = cell.flagged ? "🚩" : "";
+    for (const row of grid) {
+        for (const cell of row) {
+            const element = document.createElement("div");
+            element.classList.add("cell");
+            element.addEventListener("click", () => handleCellClick(grid, cell));
+            element.addEventListener("contextmenu", (event) => { // Add this event listener
+                event.preventDefault();
+                handleCellRightClick(cell);
+            });
+            container.appendChild(element);
+            cell.element = element;
+        }
+    }
 }
 
 function handleCellRightClick(cell) {
@@ -136,4 +153,7 @@ function handleCellRightClick(cell) {
     cell.flagged = !cell.flagged;
     cell.element.textContent = cell.flagged ? "🚩" : "";
 }
+
+startGame();
+
 
