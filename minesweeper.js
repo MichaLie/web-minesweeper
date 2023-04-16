@@ -52,4 +52,10 @@ function floodFill(grid, row, col) {
     cell.element.style.backgroundColor = "#ddd";
 
     if (cell.adjacentMines === 0) {
-        for (let r = -1; r
+        for (let r = -1; r <= 1; r++) {
+            for (let c = -1; c <= 1; c++) {
+                floodFill(grid, row + r, col + c);
+            }
+        }
+    }
+}
